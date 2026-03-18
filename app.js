@@ -1,3 +1,5 @@
+require("dotenv").config(); //changes
+
 const express=require("express");
 const app=express();
 const mongoose=require("mongoose");
@@ -16,17 +18,30 @@ const reviewRouter=require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 
-const MONGO_URL="mongodb://127.0.0.1:27017/wanderlust";
+// const MONGO_URL="mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.DATABASE_URL; //changes
+console.log("DB URL:", MONGO_URL);
 
-main().then(() =>{
-    console.log("connected to DB");
-}).catch((err) =>{
-    console.log(err);
-});
+// main().then(() =>{
+//     console.log("connected to DB");
+// }).catch((err) =>{
+//     console.log(err);
+// });
+// async function main() {
+//     await mongoose.connect(MONGO_URL);
+// }
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
+    try {
+        await mongoose.connect(MONGO_URL);
+        console.log("connected to DB");
+    } catch (err) {
+        console.log("DB ERROR:", err);
+    }
 }
+main(); //changes
+
+
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -36,7 +51,8 @@ app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
 const sessionOptions={
-    secret: "mysupersecretcode",
+    // secret: "mysupersecretcode",
+    secret: process.env.SECRET || "mysupersecretcode",// changes
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -46,8 +62,11 @@ const sessionOptions={
     },
 };
 
-app.get("/", (req,res) =>{
-    res.send("Hi, i m root");
+// app.get("/", (req,res) =>{
+//     res.send("Hi, i m root");
+// });
+app.get("/", (req, res) => {
+  res.redirect("/listings");
 });
 
 app.use(session(sessionOptions));
@@ -92,6 +111,11 @@ app.use((err, req, res, next)=>{
     // res.status(statusCode).send(message);
 })
 
-app.listen(8080, () =>{
-    console.log("server is listening on port 8080");
+// app.listen(8080, () =>{
+//     console.log("server is listening on port 8080");
+// });
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+    console.log("server is listening on port", PORT);
 });
