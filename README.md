@@ -322,10 +322,6 @@ Passionate about Full Stack Development and building scalable web applications.
 
 ---
 
-# 📜 License
-
-This project is licensed under the MIT License.
-
 ---
 
 <div align="center">
